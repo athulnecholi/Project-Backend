@@ -21,6 +21,7 @@ app.use('/api/users', userRoutes);
 app.use('/api/turfs', turfRoutes);
 app.use('/api/bookings', bookingRoutes);
 app.use('/api/reviews', reviewRoutes);
+app.use('/uploads', express.static('uploads'));
 
 
 app.listen(process.env.PORT,()=>{

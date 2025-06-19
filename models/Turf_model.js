@@ -5,7 +5,8 @@ const turfSchema= new mongoose.Schema({
   pricePerHour: { type: Number, required: true },
   availability: [{ type: String }], // Example: ["10:00-11:00", "11:00-12:00"]
   reviews: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Review' }],
-  managerId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true }
+  managerId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+  images: [String]
 });
 
 module.exports = mongoose.model('Turf', turfSchema);

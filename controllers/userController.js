@@ -17,5 +17,19 @@ exports.uploadProfile = (req, res) => {
     imageUrl: imagePath
   });
 };
+exports.updateProfilePic = async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const profilePic = req.file.filename;
 
+    const user = await User.findByIdAndUpdate(userId, { profilePic }, { new: true });
+
+    if (!user) return res.status(404).json({ msg: 'User not found' });
+
+    res.status(200).json({ msg: 'Profile picture updated', profile: user });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ msg: 'Something went wrong' });
+  }
+};
 

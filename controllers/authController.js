@@ -27,7 +27,7 @@ exports.signin = async (req, res) => {
     if (!valid) return res.status(400).json({ msg: "Invalid credentials" });
 
     const token = jwt.sign({ id: user._id, role: user.role }, process.env.JWT_SECRET, { expiresIn: "1d" });
-    res.status(200).json({ token, user: { id: user._id, name: user.name, email: user.email, role: user.role } });
+    res.status(200).json({ token, user: { id: user._id, name: user.name, email: user.email, role: user.role },msg:"Signin Success!" });
   } catch (err) {
     res.status(500).json({ msg: "Server error" });
   }

@@ -17,6 +17,21 @@ exports.bookTurf = async (req, res) => {
     res.status(500).json({ msg: "Server error while booking" });
   }
 };
+exports.myBookings = async (req, res) => {
+  try {
+    const bookings = await Booking.find({ userId: req.user.id }).populate('turfId');
+
+    if (!bookings || bookings.length === 0) {
+      return res.status(404).json({ msg: "No bookings found" });
+    }
+
+    res.status(200).json({ msg: "Booked turfs found", data: bookings });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ msg: "Server error" });
+  }
+};
+
 
 exports.cancelBooking = async (req, res) => {
   const booking = await Booking.findById(req.params.id);
