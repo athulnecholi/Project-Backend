@@ -17,7 +17,7 @@ dotenv.config()
 connectDB()
 const app=express()
 app.use(cors({
-  origin: "https://project-frontend3-zc7u.onrender.com",
+  origin: "https://project-frontend-latest-c766.onrender.com",
   credentials: true
 }));
 app.use(express.json())
