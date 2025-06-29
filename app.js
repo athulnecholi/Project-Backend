@@ -16,7 +16,10 @@ const reviewRoutes = require('./routes/reviewRoutes');
 dotenv.config()
 connectDB()
 const app=express()
-app.use(cors())
+app.use(cors({
+  origin: "https://project-frontend3-zc7u.onrender.com",
+  credentials: true
+}));
 app.use(express.json())
 app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
