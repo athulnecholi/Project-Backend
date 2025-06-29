@@ -1,4 +1,5 @@
 const Turf = require("../models/Turf_model");
+const Booking = require('../models/Bookings_model');
 
 //get all turf
 exports.getAllTurfs = async (req, res) => {
@@ -24,18 +25,29 @@ exports.getTurfByID = async (req, res) => {
 //create turf
 exports.createTurf = async (req, res) => {
   try {
-    if (req.user.role !== "admin" && req.user.role !== "manager") {
+    const role = req.user.role;
+    const userId = req.user.id;
+
+    if (role !== "admin" && role !== "manager") {
       return res.status(403).json({ msg: "Access denied" });
     }
+
     if (!req.files || req.files.length === 0) {
       return res.status(400).json({ msg: "At least one image is required" });
     }
+
     const imageFilenames = req.files.map((file) => file.filename);
+
+    const managerId = role === "admin" && req.body.managerId
+      ? req.body.managerId
+      : userId;
+
     const turf = new Turf({
       ...req.body,
-      managerId: req.user.id,
+      managerId,
       images: imageFilenames,
     });
+
     await turf.save();
     res.status(201).json(turf);
   } catch (err) {
@@ -73,4 +85,54 @@ exports.uploadTurf = (req, res) => {
     message: "Turf image uploaded successfully!",
     imageUrl: turfImagePath,
   });
+};
+
+exports.getManagerBookings = async (req, res) => {
+  try {
+    // Ensure only managers can access
+    if (req.user.role !== 'manager') {
+      return res.status(403).json({ msg: 'Access denied' });
+    }
+
+    // Get all turfs managed by this manager
+    const turfs = await Turf.find({ managerId: req.user.id });
+
+    const turfIds = turfs.map((turf) => turf._id);
+
+    // Get all bookings for these turfs
+    const bookings = await Booking.find({ turf: { $in: turfIds } })
+      .populate('user', 'name email')
+      .populate('turf', 'name location')
+      .sort({ date: -1 });
+
+    res.json(bookings);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ msg: 'Server error' });
+  }
+};
+exports.updateTurfByManager = async (req, res) => {
+  try {
+    const turf = await Turf.findOne({ _id: req.params.id, managerId: req.user.id });
+    if (!turf) return res.status(404).json({ msg: "Turf not found" });
+
+    const { pricePerHour, availability, isDisabled } = req.body;
+
+    if (pricePerHour !== undefined) turf.pricePerHour = pricePerHour;
+    if (availability !== undefined) turf.availability = availability;
+    if (isDisabled !== undefined) turf.isDisabled = isDisabled;
+
+    await turf.save();
+    res.json({ msg: "Turf updated", turf });
+  } catch (err) {
+    res.status(500).json({ msg: "Server error" });
+  }
+};
+exports.getManagerTurfs = async (req, res) => {
+  try {
+    const turfs = await Turf.find({ managerId: req.user.id });
+    res.json(turfs);
+  } catch (err) {
+    res.status(500).json({ msg: "Failed to fetch turfs" });
+  }
 };

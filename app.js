@@ -1,6 +1,8 @@
 const express=require('express')
 const connectDB=require('./config/db')
 const dotenv = require('dotenv');
+const path = require('path');
+
 const cors=require('cors')
 const authRoutes = require('./routes/authRoutes');
 const userRoutes = require('./routes/userRoutes');
@@ -22,6 +24,8 @@ app.use('/api/turfs', turfRoutes);
 app.use('/api/bookings', bookingRoutes);
 app.use('/api/reviews', reviewRoutes);
 app.use('/uploads', express.static('uploads'));
+app.use('/uploads/profiles', express.static(path.join(__dirname, 'uploads/profiles')));
+
 
 
 app.listen(process.env.PORT,()=>{

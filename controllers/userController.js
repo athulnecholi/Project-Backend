@@ -1,3 +1,4 @@
+const auth = require("../middlewares/authMiddleware");
 const User = require("../models/User_model");
 
 exports.getProfile = async (req, res) => {
@@ -32,4 +33,14 @@ exports.updateProfilePic = async (req, res) => {
     res.status(500).json({ msg: 'Something went wrong' });
   }
 };
+// routes/userRoutes.js
+exports.getManagers=async (req, res) => {
+  try {
+    const managers = await User.find({ role: "manager" }).select("-password");
+    res.json(managers);
+  } catch (err) {
+    res.status(500).json({ msg: "Server error" });
+  }
+};
+
 
