@@ -28,7 +28,8 @@ app.use(cors({
     } else {
       callback(new Error('Not allowed by CORS'));
     }
-  },
+  },methods: "GET,POST,PUT,DELETE,PATCH",
+  allowedHeaders: "Content-Type,Authorization",
   credentials: true // include this if you're sending cookies or tokens
 }));
 app.use(express.json())
