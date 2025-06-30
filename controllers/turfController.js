@@ -1,6 +1,33 @@
 const Turf = require("../models/Turf_model");
 const Booking = require('../models/Bookings_model');
 
+exports.searchTurfs = async (req, res) => {
+  try {
+    const { name, location, timeSlot } = req.query;
+
+    const query = {};
+
+    if (name) {
+      query.name = { $regex: name, $options: 'i' };
+    }
+
+    if (location) {
+      query.location = { $regex: location, $options: 'i' };
+    }
+
+    if (timeSlot) {
+      query.availability = timeSlot;
+    }
+
+    const turfs = await Turf.find(query);
+    res.status(200).json({ msg: "Turfs fetched successfully", turfs });
+  } catch (err) {
+    console.error("Error fetching turfs:", err);
+    res.status(500).json({ msg: "Server error while fetching turfs" });
+  }
+};
+
+
 //get all turf
 exports.getAllTurfs = async (req, res) => {
   const turfs = await Turf.find();
