@@ -17,7 +17,7 @@ dotenv.config()
 connectDB()
 const app=express()
 app.use(cors({
-  origin: "https://project-frontend-latest-c766.onrender.com",
+  origin: ["https://polite-lolly-d6934f.netlify.app/","http://localhost:5173" ],
   credentials: true
 }));
 app.use(express.json())
