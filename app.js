@@ -16,14 +16,23 @@ const reviewRoutes = require('./routes/reviewRoutes');
 dotenv.config()
 connectDB()
 const app=express()
+const allowedOrigins = [
+  'https://polite-lolly-d6934f.netlify.app',
+  'http://localhost:5173' // optional, for local dev
+];
+
 app.use(cors({
-  origin: ["https://polite-lolly-d6934f.netlify.app/","http://localhost:5173" ],
-  credentials: true
+  origin: function (origin, callback) {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true // include this if you're sending cookies or tokens
 }));
 app.use(express.json())
-app.get('/api/ping', (req, res) => {
-  res.send('pong');
-});
+
 app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/turfs', turfRoutes);
