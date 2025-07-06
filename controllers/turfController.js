@@ -1,38 +1,57 @@
 const Turf = require("../models/Turf_model");
 const Booking = require('../models/Bookings_model');
 
+
 exports.searchTurfs = async (req, res) => {
   try {
-    const { name, location, timeSlot } = req.query;
+    console.log("📥 Incoming query params:", req.query);
 
+    const { name, location, timeSlot } = req.query;
     const query = {};
 
     if (name) {
-      query.name = { $regex: name, $options: 'i' };
+      console.log("🔎 Adding name to query:", name);
+      query.name = { $regex: name, $options: "i" };
     }
 
     if (location) {
-      query.location = { $regex: location, $options: 'i' };
+      console.log("📍 Adding location to query:", location);
+      query.location = { $regex: location, $options: "i" };
     }
 
     if (timeSlot) {
-      query.availability = timeSlot;
+      console.log("⏰ Adding timeSlot to query:", timeSlot);
+      query.availability = { $in: [timeSlot] };
     }
 
+    console.log("🛠 Final Mongo Query Object:", JSON.stringify(query));
+
     const turfs = await Turf.find(query);
+
+    console.log("✅ Found turfs:", turfs.length);
     res.status(200).json({ msg: "Turfs fetched successfully", turfs });
+
   } catch (err) {
-    console.error("Error fetching turfs:", err);
-    res.status(500).json({ msg: "Server error while fetching turfs" });
+    console.error("❌ Error in searchTurfs:", err.message);
+    res.status(500).json({ message: "Server error", error: err.message });
   }
 };
 
 
+
+
 //get all turf
 exports.getAllTurfs = async (req, res) => {
-  const turfs = await Turf.find();
-  res.json(turfs);
+  try {
+    const turfs = await Turf.find({ isDisabled: false }); 
+    console.log("Returned turfs:", turfs);
+    res.json(turfs);
+  } catch (err) {
+    console.error("Failed to fetch turfs:", err);
+    res.status(500).json({ message: "Server error" });
+  }
 };
+
 //get turf by id
 
 exports.getTurfByID = async (req, res) => {
